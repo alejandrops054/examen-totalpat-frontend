@@ -1,0 +1,10 @@
+services:
+  laravel8010:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_8010
+    ports:
+      - "8010:80"
+    volumes:
+      - .:/var/www/html
