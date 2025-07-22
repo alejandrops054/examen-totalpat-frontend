@@ -18,18 +18,28 @@ class Cards extends Component
 
     public function loadPage($page)
     {
-        $baseUrl = config('api.base_url');
-        $response = Http::get("{$baseUrl}/api/tarjetas", ['page' => $page]);
-        $this->cards = $response->json('data') ?? [];
-        $this->links = $response->json('links') ?? [];
-        $this->page = $response->json('current_page') ?? $page;
+        $this->page = $page;
+
+        $url = "http://laravel_app/api/tarjetas?page={$page}";
+
+        $response = Http::get($url);
+
+        if ($response->successful()) {
+            $data = $response->json();
+
+            $this->cards = $data['data'] ?? [];
+            $this->links = $data['links'] ?? [];
+        } else {
+            $this->cards = [];
+            $this->links = [];
+            session()->flash('error', 'Error al cargar las tarjetas.');
+        }
     }
 
     public function gotoPage($url)
     {
-        if (!$url) {
-            return;
-        }
+        if (!$url) return;
+
         parse_str(parse_url($url, PHP_URL_QUERY), $query);
         $page = $query['page'] ?? 1;
         $this->loadPage($page);

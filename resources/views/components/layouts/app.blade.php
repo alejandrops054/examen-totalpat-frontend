@@ -11,5 +11,6 @@
 <body class="min-h-screen bg-gray-100">
     {{ $slot }}
     @livewireScripts
+@stack('scripts')
 </body>
 </html>

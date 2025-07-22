@@ -9,23 +9,32 @@ class Login extends Component
 {
     public $email = '';
     public $password = '';
-    public $error = null;
+    public $authError = null;
 
     public function submit()
     {
-        $baseUrl = config('api.base_url');
-
-        $response = Http::post("{$baseUrl}/api/login", [
-            'email' => $this->email,
-            'password' => $this->password,
+        $this->validate([
+            'email' => 'required|email',
+            'password' => 'required|string|min:4',
         ]);
 
-        if ($response->successful()) {
-            session(['token' => $response->json('token')]);
-            return redirect()->route('pokemons.create');
-        }
+        $baseUrl = config('api.base_url', 'http://laravel_app');
 
-        $this->error = 'Credenciales incorrectas';
+        try {
+            $response = Http::post("{$baseUrl}/api/login", [
+                'email' => $this->email,
+                'password' => $this->password,
+            ]);
+
+            if ($response->successful()) {
+                $token = $response->json('token');
+                $this->dispatch('token-obtenido', token: $token);
+            } else {
+                $this->authError = 'Credenciales incorrectas.';
+            }
+        } catch (\Exception $e) {
+            $this->authError = 'Error al conectar con el servidor.';
+        }
     }
 
     public function render()
