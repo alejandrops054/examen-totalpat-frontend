@@ -1,5 +1,4 @@
-<x-layouts.app>
-    <div class="max-w-md mx-auto p-4">
+<div class="max-w-md mx-auto p-4">
         @if ($message)
             <div class="mb-4 text-green-600 font-semibold">
                 {{ $message }}
@@ -41,4 +40,3 @@
             </button>
         </form>
     </div>
-</x-layouts.app>

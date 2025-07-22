@@ -16,12 +16,19 @@ class PokemonForm extends Component
     public $imagen;
     public $message = null;
 
+    public function mount()
+    {
+        if (!session('token')) {
+            return redirect()->route('login');
+        }
+    }
+
     protected function rules()
     {
         return [
             'nombre' => 'required|string|min:2',
             'color' => 'required|string',
-            'imagen' => 'required|image|max:2048', // max 2MB
+            'imagen' => 'required|image|max:2048',
         ];
     }
 
@@ -57,6 +64,7 @@ class PokemonForm extends Component
 
     public function render()
     {
-        return view('livewire.pokemon-form');
+        return view('livewire.pokemon-form')
+            ->layout('components.layouts.app');
     }
 }

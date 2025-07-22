@@ -28,9 +28,18 @@ class Login extends Component
 
             if ($response->successful()) {
                 $token = $response->json('token');
-                $this->dispatch('token-obtenido', token: $token);
+                if ($token) {
+                    session()->put('token', $token);
+                    session()->regenerate();
+
+                    return redirect()->route('dashboard')
+                        ->withCookie(cookie('token', $token));
+                }
+
+                $this->authError = 'Respuesta inválida del servidor.';
             } else {
-                $this->authError = 'Credenciales incorrectas.';
+                $mensaje = $response->json('message') ?? 'Credenciales incorrectas.';
+                $this->authError = $mensaje . ' (código ' . $response->status() . ')';
             }
         } catch (\Exception $e) {
             $this->authError = 'Error al conectar con el servidor.';
@@ -39,6 +48,7 @@ class Login extends Component
 
     public function render()
     {
-        return view('livewire.login');
+        return view('livewire.login')
+            ->layout('components.layouts.app');
     }
 }

@@ -12,6 +12,9 @@ class Dashboard extends Component
 
     public function mount()
     {
+        if (!session('token')) {
+            return redirect()->route('login');
+        }
         $this->cargarTarjetas();
     }
 
@@ -30,7 +33,7 @@ class Dashboard extends Component
     public function eliminar($id)
     {
         $baseUrl = config('api.base_url', 'http://laravel_app');
-        $token = request()->cookie('token');
+        $token = session('token');
 
         try {
             $response = Http::withToken($token)->delete("{$baseUrl}/api/pokemons/{$id}");
@@ -48,6 +51,7 @@ class Dashboard extends Component
 
     public function render()
     {
-        return view('livewire.dashboard');
+        return view('livewire.dashboard')
+            ->layout('components.layouts.app');
     }
 }
